@@ -1,0 +1,10 @@
+.DS_Store
+.idea/
+*.egg-info/
+*.log
+*.pid
+*.pkl
+*.pyc
+*.tmp
+build/
+dist/
