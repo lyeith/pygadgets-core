@@ -8,13 +8,15 @@ Created on Jul 10 15:47:08 2019
 import newrelic.hooks.database_mysqldb
 import newrelic.hooks.database_psycopg2
 import newrelic.hooks.database_sqlite
+
 import pymongo
 import pymysql
 import psycopg2
 import psycopg2.extras
 import psycopg2.extensions
-import time
+import sqlite3
 
+import time
 import datetime
 
 

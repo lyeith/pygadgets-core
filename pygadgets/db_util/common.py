@@ -10,6 +10,7 @@ import psycopg2
 import psycopg2.extras
 import psycopg2.extensions
 import time
+import sqlite3
 
 import datetime
 
@@ -114,6 +115,16 @@ def exec_sql_transaction(conn, query_lst, param_lst=None):
         raise
     else:
         conn.commit()
+
+
+def mongo_bulk_insert(col, docs, ignore_duplicates=False):
+    if ignore_duplicates:
+        try:
+            col.insert_many(docs, ordered=False)
+        except BulkWriteError:
+            print('Duplicate Found')
+    else:
+        col.insert_many(docs)
 
 
 def pg_insert_many_sql(conn, query, params):
