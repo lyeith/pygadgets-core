@@ -5,4 +5,5 @@ Created on 24/6/20 10:15 pm
 
 @author: David Wong
 """
-from . import common, common_newrelic
+from .common import *
+from . import newrelic

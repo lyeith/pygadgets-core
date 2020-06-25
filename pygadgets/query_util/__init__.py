@@ -5,4 +5,4 @@ Created on 24/6/20 10:38 pm
 
 @author: David Wong
 """
-from . import common
+from .common import *
