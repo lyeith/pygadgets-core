@@ -15,7 +15,7 @@ setup(
     description='Useful Python Gadgets',
     long_description='Data Wrangling and Stuff',
     long_description_content_type='text/markdown',
-    url='https://github.com/lyeith/pygadgets',
+    url='https://github.com/lyeith/pygadgets-core',
     packages=setuptools.find_namespace_packages(),
     install_requires=[
         'pymongo',
