@@ -14,6 +14,8 @@ import sqlite3
 
 import datetime
 
+from pymongo.errors import BulkWriteError
+
 
 def connect_mongodb(conf, timezone=None, server_timeout=10, socket_timeout=90):
     '''

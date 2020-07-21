@@ -5,7 +5,7 @@ Created on 24/6/20 10:35 pm
 
 @author: David Wong
 """
-from pygadgets import db_util
+from pygadgets import db_util, gadgets
 
 
 def drop_table(conn, schema, table):
@@ -51,6 +51,8 @@ def pg_load(conn_pg, docs, schema, table, fields):
     for doc in docs:
         for key in fields.keys():
             if not key in doc:
+                doc[key] = None
+            if not gadgets.truthy(doc[key]):
                 doc[key] = None
 
     db_util.common.pg_insert_many_sql(conn_pg, query, docs)
