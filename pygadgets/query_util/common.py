@@ -31,22 +31,48 @@ def create_table(conn, schema, table, fields):
     db_util.common.exec_sql(conn, query, fetch=False)
 
 
-def pg_load(conn_pg, docs, schema, table, fields):
-    field_query, value_query = [], []
-    for key, prop in fields.items():
-        if 'serial' in prop:
-            continue
+def pg_load(conn_pg, docs, schema, table, fields, constraints=None):
 
-        value_query.append(f'%({key})s')
-        field_query.append(f'{key}')
+    def generate_postgres_upsert(table, constraints, variables):
 
-    value_joined = ', '.join(value_query)
-    field_joined = ', '.join(field_query)
+        variables = [e for e in variables if e not in constraints]
+        all_fields = constraints + variables
 
-    query = f'''
-    INSERT INTO {schema}.{table} ({field_joined})
-    VALUES ({value_joined})
-    '''
+        all_fields_query = ', '.join(all_fields)
+        prepared_all_fields_query = ', '.join([f'%({e})s ' for e in all_fields])
+        constraints_query = ', '.join(constraints)
+        prepared_set_statement = ', '.join([f'{e} = %({e})s ' for e in variables])
+        condition_statement = 'AND '.join([f'a.{e} = %({e})s ' for e in constraints])
+
+        query = f'''
+        INSERT INTO {table} AS a({all_fields_query})
+        VALUES ({prepared_all_fields_query})
+        ON CONFLICT ({constraints_query}) DO UPDATE SET
+        {prepared_set_statement}
+        WHERE {condition_statement};
+        '''
+
+        return query
+
+    if constraints:
+        keys = [e for e in fields if fields[e] != 'serial']
+        query = generate_postgres_upsert(f'{schema}.{table}', constraints, keys)
+    else:
+        field_query, value_query = [], []
+        for key, prop in fields.items():
+            if 'serial' in prop:
+                continue
+
+            value_query.append(f'%({key})s')
+            field_query.append(f'{key}')
+
+        value_joined = ', '.join(value_query)
+        field_joined = ', '.join(field_query)
+
+        query = f'''
+                    INSERT INTO {schema}.{table} ({field_joined})
+                    VALUES ({value_joined})
+                    '''
 
     for doc in docs:
         for key in fields.keys():
