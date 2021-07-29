@@ -133,18 +133,3 @@ def pg_insert_many_sql(conn, query, params):
     cur = conn.cursor()
     psycopg2.extras.execute_batch(cur, query, params)
     conn.commit()
-
-
-def upsert_postgres_query(table, constraint, keys, variables):
-    sql = list()
-    sql.append('INSERT INTO %s AS a(' % table)
-    sql.append(', '.join(keys + variables))
-    sql.append(') VALUES (')
-    sql.append(', '.join(['%({})s '.format(x, x) for x in (keys + variables)]))
-    sql.append(') ON CONFLICT ON CONSTRAINT %s DO UPDATE SET ' % constraint)
-    sql.append(', '.join(['{} = %({})s '.format(x, x) for x in variables]))
-    sql.append('WHERE ')
-    sql.append('AND '.join(['a.{} = %({})s '.format(x, x) for x in keys]))
-    sql.append(';')
-
-    return ''.join(sql)
